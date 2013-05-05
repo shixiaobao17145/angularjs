@@ -1,0 +1,166 @@
+﻿<!doctype html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.js"></script>
+    <link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+    <style type="text/css">
+        *[ng-validate-show]{
+            display: none;
+        }
+        .error{
+            color: red;
+        }
+    </style>
+</head>
+<body ng-app="app">
+<div ng-controller="appCtrl">
+    <h3>自定义angular表单验证</h3>
+    <form name="form" id="myForm" ng-init="names=['bob','kimi','zouyong']">
+        <input name='vid' ng-model='vid' placeholder="不能为空"/>
+        <span ng-validate-show="checkRequired:vid" class="error"></span>
+        <br/>
+        <input name='vid' ng-model='dataObj.vid' placeholder="只能输入数字"/>
+        <span ng-validate-show="checkNumber:dataObj.vid"  class="error">请输入数字</span>
+        <br/>
+        <select name='vid' ng-model='dataObj.name' ng-options="name for name in names">
+        </select>
+        <span ng-validate-show="checkRequired:dataObj.name"  class="error">请选择一个屌丝</span>
+        <br/>
+        <input name='pwd' type="password" ng-model='user.pwd' placeholder="密码"/>
+        <input name='confirm_pwd' type="password" ng-model='user.confirm_pwd' placeholder="再输一次密码"/>
+        <span ng-validate-show="checkPwd:user.pwd,user.confirm_pwd"  class="error">密码不一致</span>
+        <br/>
+        <input type="button" ng-click="validateBeforeSubmit()" value="validate"/>
+        <br/>
+        <span id='msg' style="color: #2f96b4"></span>
+    </form>
+</div>
+<script>
+    var angularUtil = (function($){
+        var self = this;
+        this.apply = function(scope,fun){
+            var rtn = null;
+            if(scope.$$phase){
+                rtn = fun();
+            }else{
+                scope.$apply(function(){
+                    rtn = fun();
+                });
+            }
+            return rtn;
+        }
+        this.getValue = function(obj,key){
+            var value = obj;
+            $.each(key.split("."),function(i,v){value=value[v];if(!value){return false;}});
+            return value;
+        }
+        this.scopeValidate = function (scope,scopeElement,filter/*filterFunction*/){
+            var validateAttrName = 'ng-validate-show';
+            var afterValidateNgModel = function(modelStr,msgEle){
+                modelStr.split(",")
+                $("[ng-model='"+modelStr.split(',').join("'],[ng-model='")+"']")
+                        .off('focus').on("focus",function(){
+                            console.log('afterValidateNgModel...');
+                            $(msgEle).hide();
+                        });
+            }
+            var errors = [];
+            var validates = $(scopeElement).find("["+validateAttrName+"]").filter(function(){
+                var ok = $(this).parent().is(":visible");
+                if(filter){
+                    ok = ok && filter.call(this);
+                }
+                return ok;
+            });
+
+            validates.each(function(i,toShowEle){
+                var validateExp = $(this).attr(validateAttrName).split(":");
+                var validateFunName = validateExp[0].replace(/[\(\)]/g,"");
+                var result = self.apply(scope,function(){
+                    var validateFun = scope[validateFunName] || self[validateFunName];
+                    var rtn = validateFun?validateFun.apply(null,[toShowEle].concat(validateExp.slice(1)).concat([scope])):true;
+                    return rtn;
+                });
+                if(result==false){
+                    $(toShowEle).show();
+                    afterValidateNgModel(validateExp[1],toShowEle);
+                    errors.push(toShowEle);
+                }
+            });
+
+            return errors.length?errors:null;
+        }
+        this.checkRequired = function(ele,modelStr){
+            console.log("checkRequired...");
+            var scope = arguments[arguments.length-1];
+            var rtn = true;
+            var msg = null;
+            var val = this.getValue(scope,modelStr);
+            if(!$.trim(val)){
+                rtn = false;
+                if(!$.trim($(ele).text()))msg = "必填";
+            }
+            if(!rtn && msg)$(ele).text(msg);
+            return rtn;
+        }
+        this.checkNumber = function(ele,modelStr){
+            console.log("checkNumber...");
+            var scope = arguments[arguments.length-1];
+            var rtn = true;
+            var msg = null;
+            var val = this.getValue(scope,modelStr);
+            if($.trim(val) && !parseFloat(val)){
+                rtn = false;
+                msg = "必须为数字";
+            }
+            if(!rtn)$(ele).text(msg);
+            return rtn;
+        }
+        this.reCompile = function(ele){
+            var view=$(ele);
+            var scope = view.scope();
+            if(scope){
+                angular.injector(['ng']).get("$compile")(view)(scope);
+                scope.$digest();
+            }
+        }
+
+        return this;
+    })(jQuery);
+
+
+
+    var app = angular.module("app",[]);
+    app.controller("appCtrl",["$scope",function(scope){
+        console.log(scope);
+        scope.user = {};
+        scope.isOkToSubmit = false;
+        scope.checkPwd = function(ele,valName){
+            console.log(ele);
+            console.log(valName);
+            console.log(scope.user.confirm_pwd);
+            var isOk = (scope.user.confirm_pwd==scope.user.pwd);
+            if(isOk && !scope.user.pwd){
+                isOk = false;
+                $(ele).text('请输入密码');
+            }else{
+                $(ele).text('两次密码不一致');
+            }
+            return  isOk;
+        }
+
+        scope.validateBeforeSubmit = function(){
+            var errorMsgs = angularUtil.scopeValidate(scope,$("#myForm"));
+            console.log(errorMsgs);
+            if(!errorMsgs){
+                $("#msg").text('恭喜可以提交了。。。');
+            }else{
+                $("#msg").text('表单验证不通过，还不能提交。。。');
+            }
+        }
+    }]);
+</script>
+</body>
+</html>

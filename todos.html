@@ -1,0 +1,99 @@
+﻿<!doctype html>
+<html>
+<head>
+    <link type="text/css" rel="stylesheet"
+          href="lib/bootstrap/css/bootstrap.css"/>
+    <style type="text/css">
+        .container {
+            width: 800px;
+        }
+
+        .done-true {
+            text-decoration: line-through;
+            color: grey;
+        }
+
+        .list-header {
+            background-color: #d3d3d3;
+            color: black;
+            text-transform: none;
+        }
+
+        .todo-list {
+            border-color: #d3d3d3;
+            padding-top: 0;
+            width: 600px;
+        }
+
+        .ng-cloak {
+            display: none;
+        }
+    </style>
+</head>
+<body ng-app="todoApp">
+<div ng-controller="todoCtrl">
+    <div class="container">
+        <form ng-submit="addNew()">
+            <fieldset>
+                <legend>Todo List</legend>
+                <!-- <h3>Todo List</h3>
+                <hr /> -->
+                <!-- <div class="navbar">
+                    <div class="navbar-inner"> -->
+                <div class="row">
+                    <div class="span">
+                        <ul class="nav nav-pills">
+                            <li class="{{getClassByFilter('all')}}"><a href="#"
+                                                                       ng-click="setFilterMode('all')">全部任务</a></li>
+                            <li class="{{getClassByFilter('undone')}}"><a href="#"
+                                                                          ng-click="setFilterMode('undone')">未完成</a>
+                            </li>
+                            <li class="{{getClassByFilter('done')   }}"><a href="#"
+                                                                        ng-click="setFilterMode('done')">已完成</a></li>
+                        </ul>
+                    </div>
+                    <div class="span" style="margin-left: 15px">
+                        <div class="btn-group">
+                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">排序
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">创建时间<i class="icon-arrow-up"></i></a></li>
+                                <li><a href="#">创建时间<i class="icon-arrow-down"></i></a></li>
+                                <li class="divider"></li>
+                                <li class="{{getDoneOrderClass()}}"><a href="#">已完成在前</a></li>
+                                <li class="{{getDoneOrderClass()}}"><a href="#">未完成在前</a></li>
+                            </ul>
+                        </div>
+                        <input type="text" style="margin-left: 15px;padding: 5px 12px" class="search-query"
+                               placeholder="Search">
+                    </div>
+                </div>
+                <!-- </div>
+                </div> -->
+                <div class="input-append">
+                    <input class="span4" type="text" placeholder="输入新任务"
+                           ng-model="new_content">
+                    <button class="btn btn-primary" ng-click="addNew()">
+                        <i class="icon-plus-sign icon-white"></i>添加
+                    </button>
+                </div>
+                <div class="">
+                    <ul class="nav well unstyled nav-list todo-list">
+                        <li class="nav-header list-header">任务列表</li>
+                        <li
+                                ng-repeat="todo in todos | task:filterMode | orderBy:['-done']"
+                                ng-cloak class="ng-cloak"><input type="checkbox"
+                                                                 ng-model="todo.done" ng-model="todo.done"/> <span
+                                class="done-{{todo.done}}">{{todo.content}}</span></li>
+                    </ul>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<script src="lib/jquery-1.8.3.js"></script>
+<script src="lib/angular.js"></script>
+<script src="lib/bootstrap/js/bootstrap.js"></script>
+<script src="todos.js"></script>
+</body>
+</html>

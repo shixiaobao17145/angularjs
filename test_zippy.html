@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+	<script src="lib/bootstrap/js/bootstrap.js"></script>
+	<link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+  </head>
+  <body ng-app="behaviorApp">
+	<script type="text/ng-template" id='zippy.html'>
+		<div xx='fff'><h3 ng-click='toggle()'>{{title}}</h3><div ng-show='isContentVisible' ng-transclude>123</div></div>
+	</script>
+    <div ng-controller="AppCtrl">
+	......
+	<input ng-model="model.title"/>
+	<textarea ng-model="model.content"></textarea>
+	<span zippy  title="model.title">
+		<span>{{model.content}}</span>
+	</span>
+    </div>
+	<script>
+		var behaviorApp = angular.module("behaviorApp",[]);
+		var controllers = {};
+		var directives = {};
+		behaviorApp.controller(controllers);
+		behaviorApp.directive(directives);
+		controllers.AppCtrl = function($scope){
+			
+		}
+		directives.zippy = function($templateCache){
+				console.log($templateCache.get("zippy.html"));
+			return {
+				scope:{
+					title:'='
+				},
+				//restrict:'E',
+				transclude:true,
+				replace:true,
+				templateUrl:"zippy.html",
+				link:function($scope,element){
+					console.log(element.get(0));
+					$scope.isContentVisible = true;
+					$scope.toggle = function(){
+						console.log(this.isContentVisible = !this.isContentVisible);
+					}
+				}
+			}
+		}
+	</script>
+  </body>
+</html>

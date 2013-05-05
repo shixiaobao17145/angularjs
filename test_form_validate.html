@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.js"></script>
+    <link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+</head>
+<body ng-app="app">
+<div ng-controller="appCtrl">
+    ......
+    <form name="form">
+        <input id="ipt" name="vid" required="" type="text" ng-model="vid" value=""/>
+        <span style="color: red" ng-show="form.$dirty && form.vid.$error.required">required</span>
+        <span style="color: red;{{print()}}" ng-display="print()">Show Me</span>
+        <input type="button" value="submit"  ng-click="doSubmit()">
+        <span>showValue:{{a}}</span>
+        <span style="color: red" ng-show="getBoolean()||a==3">red</span>
+        <button ng-click="a=3">set by ngclick</button>
+        <button onclick='setScopeValue();'>nativeclickSetValue</button>
+        <button onclick='getScopeValue();'>nativeclickGetValue</button>
+        <span id="value_span">2</span>
+    </form>
+</div>
+<script>
+    function setScopeValue(){
+        scope = $("#ipt").scope();
+//        scope.$apply('a=3')
+//        scope.a=4;
+        scope.$eval('a=5')
+    }
+    function getScopeValue(){
+        scope = $("#ipt").scope();
+        console.log("the value of a in the scope:"+scope.a);
+    }
+    var app = angular.module("app",[]);
+    app.controller("appCtrl",["$scope",function(scope){
+        console.log(scope);
+        scope.doSubmit = function(){
+            scope.form.$dirty = true;
+        }
+        scope.print = function(){
+            console.log("print123");
+            return scope.vid=="123"?"display:none":"";
+        }
+        scope.getBoolean = function(){
+            var ok = ($("#value_span").text()==3);
+            console.log('getBoolean'+ok);
+            return ok;
+        }
+    }]).directive("ngDisplay",function($parse){
+         return function(scope,element,attrs){
+             var display = attrs.ngDisplay;
+             console.log("display:"+display);
+             scope.$eval(display);
+//             $parse(display);
+         }
+    })
+</script>
+</body>
+</html>

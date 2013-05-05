@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+	<script src="lib/bootstrap/js/bootstrap.js"></script>
+	<link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+  </head>
+  <body ng-app="app">
+    <div ng-controller="appCtrl">
+	......
+        <form name="form">
+            <span style="color: red" ng-show="form.$dirty && form.vid.$error.required">required</span>
+		    <input id="ipt" name="vid"  required type="text" ng-model="vid" value=""/>
+        </form>
+    </div>
+	<script>
+		var app = angular.module("app",[]);
+        app.controller("appCtrl",["$scope",function(scope){
+            console.log(scope);
+        }]);
+        app.directive("ngValidate",["$timeout",function(timeout){
+            return function(scope,elem,attrs,ctrl){
+                var timeoutId;
+                function setVali(){
+                   var val = angular.element(elem).val();
+                   console.log('set val');
+                   scope[attrs["ngValidate"]] = val;
+                }
+
+                function updateLater() {
+                        timeoutId = timeout(function() {
+                        setVali();
+                        updateLater();
+                    }, 300);
+                }
+
+                elem.bind('$destroy', function() {
+                    timeout.cancel(timeoutId);
+                });
+
+                updateLater();
+            }
+		}]);
+	</script>
+  </body>
+</html>

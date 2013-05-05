@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script src="lib/angular.js"></script>
+<script src="lib/bootstrap/js/bootstrap.js"></script>
+<link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+</head>
+<body ng-app="caculatorApp">
+<form class="form-horizontal" name="">
+  <fieldset>
+    <legend>
+    <h3>Angular 计算器</h3>
+    </legend>
+    <div class="control-group">
+      <label class="control-label">输入表达式：</label>
+      <div class="controls">
+        <input type="text" ng-model="exp" placeholder="输入表达式"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label">计算结果：</label>
+	  <div class="controls">
+		<label style="text-align:left" class="control-label">{{$eval(exp)}}</label>
+	  </div>
+    </div>
+  </fieldset>
+</form>
+<script>
+	var caculatorApp = angular.module("caculatorApp",[]);
+</script>
+</body>
+</html>

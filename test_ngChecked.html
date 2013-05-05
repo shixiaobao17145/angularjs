@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.js"></script>
+    <link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+</head>
+<body ng-app="app">
+<div ng-controller="appCtrl">
+    ......
+    <form name="form" id="myForm">
+        <div ng-repeat="id in [1,2,3,4,5,6]">
+            <input type="checkbox" value="{{id}}" ng-click="check($event,'idx'+$index)">
+        </div>
+    </form>
+</div>
+<script>
+    function getScopeValue(){
+        scope = $("#ipt").scope();
+        console.log("the value of a in the scope:"+scope.a);
+    }
+    var app = angular.module("app",[]);
+    app.controller("appCtrl",["$scope",function(scope){
+        scope.checks = [];
+        scope.check = function(event,idxInfo){
+            console.log("click a checkbox,idxInfo is:"+idxInfo);
+            console.log($(event.target))
+            var checkbox = $(event.target);
+            var val = checkbox.val();
+            if(checkbox.attr('checked')){
+                console.log("checked!");
+                scope.checks.push(val);
+                console.log(scope.checks);
+            }else{
+                console.log('not checked');
+                var idx = $.inArray(val,scope.checks);
+                if(idx>-1){
+                    console.log("find it exists in checks at index:"+idx);
+                    scope.checks.splice(idx,1);
+                    console.log("splice it");
+                }
+                console.log(scope.checks);
+            }
+        }
+    }]);
+</script>
+</body>
+</html>

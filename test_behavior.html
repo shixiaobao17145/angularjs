@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+	<script src="lib/bootstrap/js/bootstrap.js"></script>
+	<link type="text/css" rel="stylesheet" href = "lib/bootstrap/css/bootstrap.css"/>
+  </head>
+  <body ng-app="behaviorApp">
+    <div>
+	......
+		<div enter style="border:1px solid red">
+			<br/>
+		<br/><br/><br/><br/><br/>
+		
+		</div>
+    </div>
+	<script>
+		var behaviorApp = angular.module("behaviorApp",[]);
+		behaviorApp.directive("enter",function(){
+		return function(scope,element){
+				element.bind("mouseenter",function(){
+						console.log(element);
+						console.log("I'm inside of you!");
+				});
+			}
+		});
+		
+	</script>
+  </body>
+</html>
